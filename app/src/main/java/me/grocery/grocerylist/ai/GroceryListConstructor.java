@@ -1,5 +1,7 @@
 package me.grocery.grocerylist.ai;
 
+import android.content.Context;
+
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -8,16 +10,18 @@ import com.theokanning.openai.service.OpenAiService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import me.grocery.grocerylist.SplashActivity;
 /**
  * Generates prompts to a user based on their answer to an initial question.
  * The prompts are intended to refine the grocery list or meal plan the user is seeking to create.
  */
 public class GroceryListConstructor {
-    private final String API_KEY = ApiKeyReader.getApiKey();
+    Context context;
+    private final String API_KEY;
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them five follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
@@ -25,14 +29,17 @@ public class GroceryListConstructor {
 
     // TODO: make sure api isn't evil
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
-            "they answered \"%s\".  You then asked them five follow up questions: \"%s, %s, %s, " +
-            "%s, %s\" and they answered \"%s, %s, %s, %s, %s\". Please provide them with a " +
-            "well-rounded and nutritious grocery list based on their wants. Additionally, " +
-            "provide general health and diet advice given what you asked the user and their " +
-            "respective answers. Format this data into a JSON file with a key for each major food" +
+            "they answered \"%s\".  You then asked them five follow up questions: \"%s\", \"%s\"," +
+            " \"%s\", \"%s\", \"%s\" and they answered \"%s\", \"%s\", \"%s\", \"%s\", \"%s\". " +
+            "Please provide them with a well-rounded and nutritious grocery list based on their " +
+            "wants.  Additionally, provide general health and diet advice given what you asked " +
+            "the user and their " +
+            "respective answers. Format this data into a JSON file with a key for each major " +
+            "food" +
             " group and it's corresponding pair as an array containing the foods. At the end of " +
             "the JSON file, add a key for \"advice\" and include the general health and diet " +
             "advice you generated. Do not add any extra text.";
+
 
     private final String initialPrompt;
     private final String initialAnswer;
@@ -41,9 +48,11 @@ public class GroceryListConstructor {
      * @param initialPrompt the initial question asked to the user regarding meal plan
      * @param initialAnswer the answer to the initial question
      */
-    public GroceryListConstructor(String initialPrompt, String initialAnswer) {
+    public GroceryListConstructor(String initialPrompt, String initialAnswer, Context context) {
+        this.context = context;
         this.initialPrompt = initialPrompt;
         this.initialAnswer = initialAnswer;
+        this.API_KEY = ApiKeyReader.getApiKey(context);
     }
 
     /**
@@ -54,7 +63,7 @@ public class GroceryListConstructor {
      */
     public List<String> followUpQuestions() {
         List<String> questions = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         List<ChatMessage> messages = new ArrayList<>();
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -87,7 +96,7 @@ public class GroceryListConstructor {
      */
     public JSONObject generateGroceryList(List<String> questions, List<String> answers) {
         List<ChatMessage> messages = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         // TODO: write this properly, it could cause a lot of issues.
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -98,8 +107,6 @@ public class GroceryListConstructor {
         messages.add(message);
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-                // replace strings in follow up prompt with initial prompt and initial
-                // answer
                 .messages(messages)
                 .model("gpt-3.5-turbo")
                 // .maxTokens(400)
@@ -107,6 +114,7 @@ public class GroceryListConstructor {
 
         ChatMessage response =
                 service.createChatCompletion(completionRequest).getChoices().get(0).getMessage();
+
         String answer = response.getContent();
 
         JSONObject jsonObject = null;
