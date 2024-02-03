@@ -1,9 +1,12 @@
 package me.grocery.grocerylist.ui.home;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,17 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        // Inside your activity or fragment
+        EditText editText = root.findViewById(R.id.edittextid);
+        String enteredText = editText.getText().toString();
+
+// Save the text to SharedPreferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("savedTextKey", enteredText);
+        editor.apply();
+
 
         RecyclerView recyclerView= root.findViewById(R.id.recyclerView);
 
