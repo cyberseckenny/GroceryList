@@ -1,8 +1,18 @@
 package me.grocery.grocerylist;
 
-import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.Assert.assertNotEquals;
+
+import android.os.Looper;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.List;
 
 import me.grocery.grocerylist.ai.GroceryListConstructor;
 
@@ -21,9 +31,8 @@ public class GroceryListConstructorTest {
     public void followUpQuestions_doesGenerate() {
         GroceryListConstructor groceryListConstructor = new GroceryListConstructor(INITIAL_PROMPT
                 , INITIAL_ANSWER);
+        List<String> questions = groceryListConstructor.followUpQuestions();
 
-        assertDoesNotThrow(() -> {
-            groceryListConstructor.followUpQuestions().forEach(System.out::println);
-        });
+        assertNotEquals(String.valueOf(0), questions.size(), "The questions should not be empty.");
     }
 }
