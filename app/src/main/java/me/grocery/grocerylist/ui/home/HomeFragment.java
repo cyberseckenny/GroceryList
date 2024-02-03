@@ -1,5 +1,6 @@
 package me.grocery.grocerylist.ui.home;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,6 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +38,8 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     
     public boolean SaveState= false;
+
+    private JSONObject data;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
@@ -41,7 +48,16 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        if (getContext() != null){
+            Context context = getContext();
+            try {
+                FileInputStream fis=context.openFileInput("groceryItems");
 
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
 
 
         RecyclerView recyclerView= root.findViewById(R.id.recyclerView);
