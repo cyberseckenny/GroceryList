@@ -8,6 +8,7 @@ import com.theokanning.openai.service.OpenAiService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,14 +26,17 @@ public class GroceryListConstructor {
 
     // TODO: make sure api isn't evil
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
-            "they answered \"%s\".  You then asked them five follow up questions: \"%s, %s, %s, " +
-            "%s, %s\" and they answered \"%s, %s, %s, %s, %s\". Please provide them with a " +
-            "well-rounded and nutritious grocery list based on their wants. Additionally, " +
-            "provide general health and diet advice given what you asked the user and their " +
-            "respective answers. Format this data into a JSON file with a key for each major food" +
+            "they answered \"%s\".  You then asked them five follow up questions: \"%s\", \"%s\"," +
+            " \"%s\", \"%s\", \"%s\" and they answered \"%s\", \"%s\", \"%s\", \"%s\", \"%s\". " +
+            "Please provide them with a well-rounded and nutritious grocery list based on their " +
+            "wants.  Additionally, provide general health and diet advice given what you asked " +
+            "the user and their " +
+            "respective answers. Format this data into a JSON file with a key for each major " +
+            "food" +
             " group and it's corresponding pair as an array containing the foods. At the end of " +
             "the JSON file, add a key for \"advice\" and include the general health and diet " +
             "advice you generated. Do not add any extra text.";
+
 
     private final String initialPrompt;
     private final String initialAnswer;
@@ -87,7 +91,7 @@ public class GroceryListConstructor {
      */
     public JSONObject generateGroceryList(List<String> questions, List<String> answers) {
         List<ChatMessage> messages = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         // TODO: write this properly, it could cause a lot of issues.
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -98,8 +102,6 @@ public class GroceryListConstructor {
         messages.add(message);
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-                // replace strings in follow up prompt with initial prompt and initial
-                // answer
                 .messages(messages)
                 .model("gpt-3.5-turbo")
                 // .maxTokens(400)
