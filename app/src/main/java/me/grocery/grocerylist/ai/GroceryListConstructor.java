@@ -17,7 +17,7 @@ import java.util.List;
  * The prompts are intended to refine the grocery list or meal plan the user is seeking to create.
  */
 public class GroceryListConstructor {
-    private final String API_KEY = "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";
+    private final String API_KEY = ApiKeyReader.getApiKey();
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them five follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
