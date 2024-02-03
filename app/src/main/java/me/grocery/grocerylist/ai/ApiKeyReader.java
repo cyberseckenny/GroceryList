@@ -1,6 +1,9 @@
 package me.grocery.grocerylist.ai;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -12,8 +15,7 @@ public class ApiKeyReader {
      */
     public static String getApiKey() {
         Properties properties = new Properties();
-        try (InputStream input = ApiKeyReader.class.getClassLoader().getResourceAsStream("config" +
-                ".properties")) {
+        try (InputStream input = Files.newInputStream(Paths.get("../config.properties"))) {
             properties.load(input);
             return properties.getProperty("api.key");
         } catch (Exception e) {

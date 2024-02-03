@@ -107,6 +107,7 @@ public class GroceryListConstructor {
 
         ChatMessage response =
                 service.createChatCompletion(completionRequest).getChoices().get(0).getMessage();
+
         String answer = response.getContent();
 
         JSONObject jsonObject = null;
