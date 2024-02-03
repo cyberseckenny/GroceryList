@@ -1,13 +1,19 @@
 package me.grocery.grocerylist.ai;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+
+import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Generates prompts to a user based on their answer to an initial question.
@@ -18,9 +24,9 @@ public class GroceryListConstructor {
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them five follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
-            "into a text file with \";\" separating each question.";
-    private String initialPrompt;
-    private String initialAnswer;
+            "into a text file separating each question be a new line. Do not add any extra text.";
+    private final String initialPrompt;
+    private final String initialAnswer;
 
     /**
      * @param initialPrompt the initial question asked to the user regarding meal plan
@@ -39,30 +45,27 @@ public class GroceryListConstructor {
      */
     public List<String> followUpQuestions() {
         List<String> questions = new ArrayList<>();
-        final String[] answer = new String[1];
+        OpenAiService service = new OpenAiService(API_KEY);
 
-        Runnable task = () -> {
-            try {
-                OpenAiService service = new OpenAiService(API_KEY);
-                CompletionRequest completionRequest = CompletionRequest.builder()
-                        // replace strings in follow up prompt with initial prompt and initial
-                        // answer
-                        .prompt(String.format(FOLLOW_UP_PROMPT, initialPrompt, initialAnswer))
-                        .model("babbage-002")
-                        // .maxTokens(400)
-                        .build();
+        List<ChatMessage> messages = new ArrayList<>();
+        ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
+                String.format(FOLLOW_UP_PROMPT, initialPrompt, initialAnswer));
+        messages.add(message);
+        ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
+                // replace strings in follow up prompt with initial prompt and initial
+                // answer
+                .messages(messages)
+                .model("gpt-3.5-turbo")
+                // .maxTokens(400)
+                .build();
 
-                answer[0] = service.createCompletion(completionRequest).getChoices().get(0).getText();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        };
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(task);
-        executorService.shutdown();
+        ChatMessage response =
+                service.createChatCompletion(completionRequest).getChoices().get(0).getMessage();
 
-        Collections.addAll(questions, answer[0].split(";"));
+        String answer = response.getContent();
+        Collections.addAll(questions, answer.split("\n"));
+
         return questions;
     }
 
