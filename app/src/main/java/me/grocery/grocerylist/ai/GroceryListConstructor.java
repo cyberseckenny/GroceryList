@@ -1,5 +1,7 @@
 package me.grocery.grocerylist.ai;
 
+import android.content.Context;
+
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -8,16 +10,18 @@ import com.theokanning.openai.service.OpenAiService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import me.grocery.grocerylist.SplashActivity;
 /**
  * Generates prompts to a user based on their answer to an initial question.
  * The prompts are intended to refine the grocery list or meal plan the user is seeking to create.
  */
 public class GroceryListConstructor {
-    private final String API_KEY = ApiKeyReader.getApiKey();
+    Context context;
+    private final String API_KEY;
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them five follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
@@ -41,9 +45,11 @@ public class GroceryListConstructor {
      * @param initialPrompt the initial question asked to the user regarding meal plan
      * @param initialAnswer the answer to the initial question
      */
-    public GroceryListConstructor(String initialPrompt, String initialAnswer) {
+    public GroceryListConstructor(String initialPrompt, String initialAnswer, Context context) {
+        this.context = context;
         this.initialPrompt = initialPrompt;
         this.initialAnswer = initialAnswer;
+        this.API_KEY = ApiKeyReader.getApiKey(context);
     }
 
     /**
@@ -54,7 +60,7 @@ public class GroceryListConstructor {
      */
     public List<String> followUpQuestions() {
         List<String> questions = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         List<ChatMessage> messages = new ArrayList<>();
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -87,7 +93,7 @@ public class GroceryListConstructor {
      */
     public JSONObject generateGroceryList(List<String> questions, List<String> answers) {
         List<ChatMessage> messages = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         // TODO: write this properly, it could cause a lot of issues.
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
