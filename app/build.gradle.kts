@@ -53,4 +53,5 @@ dependencies {
     implementation("org.json:json:20231013")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
+    implementation("com.google.code.gson:gson:2.8.9")
 }
