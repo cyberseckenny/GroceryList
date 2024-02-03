@@ -47,6 +47,10 @@ dependencies {
     implementation("com.theokanning.openai-gpt3-java:service:0.18.2")
     implementation("androidx.navigation:navigation-ui:2.7.6")
     implementation("org.json:json:20231013")
+    implementation("com.theokanning.openai-gpt3-java:api:0.18.2")
+    implementation("com.theokanning.openai-gpt3-java:client:0.18.2")
+    implementation("com.theokanning.openai-gpt3-java:service:0.18.2")
+    implementation("org.json:json:20231013")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
 }
