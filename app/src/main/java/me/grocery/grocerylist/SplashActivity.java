@@ -28,6 +28,11 @@ public class SplashActivity extends AppCompatActivity {
             "2000 calorie gluten-free meal plan",
             "1500 calorie low-carb meal plan"
     };
+    private String userInput;
+
+    public String getUserInput() {
+        return userInput;
+    }
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable typingAnimation;
@@ -126,6 +131,8 @@ public class SplashActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                userInput = editText.getText().toString();
+                Log.d("user input:", userInput);
                 Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(mainIntent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -141,6 +148,8 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
 
                 String text = mealPlans[textIndex];
+                if(text == null)
+                    return;
                 if (charIndex < text.length()) {
                     editText.setHint(text.substring(0, ++charIndex) + (cursorBlinkState ? "|" : ""));
                     handler.postDelayed(this, TYPING_INTERVAL);
