@@ -9,4 +9,6 @@
     <string name="create">Create!</string>
     <string name="hey_n_let_s_find_a_meal_plan_that_s_right_for_you">Hey!\n Let\'s find a meal plan that\'s right for you!</string>
     <string name="title">TITLE</string>
+    <string name="logo">Logo</string>
+    <string name="progressbar">ProgressBar</string>
 </resources>

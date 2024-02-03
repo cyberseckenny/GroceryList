@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
     private final int SPLASH_DISPLAY_LENGTH = 8000;
@@ -28,6 +30,18 @@ public class SplashActivity extends AppCompatActivity {
             "2000 calorie gluten-free meal plan",
             "1500 calorie low-carb meal plan"
     };
+
+    private ArrayList<String> questions;
+
+    public void setQuestions(ArrayList<String> questions) {
+        this.questions = questions;
+    }
+
+    public ArrayList<String> getQuestions() {
+        return questions;
+    }
+
+
     private String userInput;
 
     public String getUserInput() {
@@ -57,7 +71,7 @@ public class SplashActivity extends AppCompatActivity {
         TextView titleTextView = findViewById(R.id.titleText);
         EditText editText = findViewById(R.id.inputEditText);
         Button submitButton = findViewById(R.id.submitButton);
-
+        ImageView progressBar = findViewById(R.id.loadingImageView);
         Animation fadeInForLogo = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         Animation slideUpForLogo = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         Animation fadeInForTitle = AnimationUtils.loadAnimation(this, R.anim.fade_in);
@@ -132,6 +146,8 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 userInput = editText.getText().toString();
+                progressBar.setVisibility(View.VISIBLE);
+            //  sendPromptToBackendAndReceiveQuestions(userInput)
                 Log.d("user input:", userInput);
                 Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(mainIntent);
