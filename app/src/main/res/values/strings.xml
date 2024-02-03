@@ -3,4 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="hey_let_s_find_a_meal_plan_that_s_fit_for_you">Hey! Let’s find a meal plan that’s fit for you.</string>
+    <string name="enter_your_requirement">Enter your requirement</string>
+    <string name="_1400_calorie_keto_meal_plan">\'1400 calorie keto meal plan\'</string>
+    <string name="create">Create!</string>
+    <string name="hey_n_let_s_find_a_meal_plan_that_s_right_for_you">Hey!\n Let\'s find a meal plan that\'s right for you!</string>
+    <string name="title">TITLE</string>
 </resources>
