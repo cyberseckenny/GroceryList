@@ -2,6 +2,10 @@ plugins {
     id("com.android.application")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 android {
     namespace = "me.grocery.grocerylist"
     compileSdk = 34
@@ -44,5 +48,5 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.7.6")
     implementation("org.json:json:20231013")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
 }
