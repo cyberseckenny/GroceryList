@@ -1,8 +1,11 @@
 package me.grocery.grocerylist;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,30 +13,80 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
-
+public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final ArrayList<ItemModel> items;
+    private static final int VIEW_TYPE_ITEM = 0;
+    private static final int VIEW_TYPE_ADD_BUTTON = 1;
+    private Context context;
 
-    public ItemsAdapter(ArrayList<ItemModel> items) {
+    public ItemsAdapter(Context context,ArrayList<ItemModel> items) {
+        this.context = context;
         this.items = items;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == items.size()) ? VIEW_TYPE_ADD_BUTTON : VIEW_TYPE_ITEM;
     }
 
     @NonNull
     @Override
-    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
-        return new ItemViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_ITEM) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
+            return new ItemViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.add_item_button_layout, parent, false);
+            return new AddItemViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        ItemModel item = items.get(position);
-        holder.itemName.setText(item.getItemName());
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (getItemViewType(position) == VIEW_TYPE_ITEM) {
+            ItemModel item = items.get(position);
+            ((ItemViewHolder) holder).itemName.setText(item.getItemName());
+
+            // Set click listener for editing
+            holder.itemView.setOnClickListener(v -> {
+                final EditText editText = new EditText(context);
+                editText.setText(item.getItemName());
+                editText.selectAll();
+
+                new AlertDialog.Builder(context)
+                        .setTitle("Edit Item")
+                        .setView(editText)
+                        .setPositiveButton("Save", (dialog, which) -> {
+                            String newText = editText.getText().toString();
+                            item.setItemName(newText);
+                            notifyItemChanged(position);
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
+        } else {
+            // Handle the Add button click event
+            holder.itemView.setOnClickListener(v -> {
+                final EditText editText = new EditText(context);
+                new AlertDialog.Builder(context)
+                        .setTitle("Add New Item")
+                        .setView(editText)
+                        .setPositiveButton("Add", (dialog, which) -> {
+                            String itemName = editText.getText().toString();
+                            if (!itemName.isEmpty()) {
+                                items.add(new ItemModel(itemName));
+                                notifyItemInserted(items.size() - 1);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items.size() + 1; // +1 for the Add button
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -44,5 +97,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             itemName = itemView.findViewById(R.id.itemNameTextView);
         }
     }
-}
 
+    static class AddItemViewHolder extends RecyclerView.ViewHolder {
+        public AddItemViewHolder(View itemView) {
+            super(itemView);
+            // itemView is your add item button layout
+        }
+    }
+}

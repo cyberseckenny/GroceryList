@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/teal_200"
         android:fontFamily="@font/syneregular"
+        android:textSize="20dp"
         android:text="Item Name"
         android:layout_gravity="center"/>
     </FrameLayout>

@@ -11,4 +11,8 @@ public class ItemModel {
     public String getItemName() {
         return itemName;
     }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
 }

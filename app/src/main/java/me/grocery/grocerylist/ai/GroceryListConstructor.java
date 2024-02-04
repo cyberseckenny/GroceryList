@@ -38,7 +38,7 @@ public class GroceryListConstructor {
             "the user and their " +
             "respective answers. Format this data into a JSON file with a key for each major " +
             "food" +
-            " group and it's corresponding pair as an array containing the foods. At the end of " +
+            " group and it's corresponding pair as an array containing the foods. The key should only be one word. At the end of " +
             "the JSON file, add a key for \"advice\" and include the general health and diet " +
             "advice you generated. Do not add any extra text.";
 

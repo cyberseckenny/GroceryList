@@ -7,8 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name= "jet">#2D2D2A</color>
-    <color name= "davy_gray">#4C4C47</color>
-    <color name="citron">#E3D26F</color>
-
+    <color name= "jet">#30323d</color>
+    <color name= "davy_gray">#4d5061</color>
+    <color name="citron">#5c80bc</color>
+    <color name = "gray">#cdd1c4</color>
 </resources>
