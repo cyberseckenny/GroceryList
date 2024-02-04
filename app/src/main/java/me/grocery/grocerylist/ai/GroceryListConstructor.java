@@ -24,23 +24,24 @@ public class GroceryListConstructor {
     Context context;
     private final String API_KEY;
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
-            "they answered \"%s\" Ask them five follow up questions that would allow you to " +
+            "they answered \"%s\" Ask them ONLY FIVE (no sub-questions) follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
-            "into a text file separating each question be a new line. Make sure to number each " +
+            "into a JSON file separating each question by a new line. Make sure to number each " +
             "question. Do not add any extra text.";
 
     // TODO: make sure api isn't evil
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\".  You then asked them five follow up questions: \"%s\", \"%s\"," +
             " \"%s\", \"%s\", \"%s\" and they answered \"%s\", \"%s\", \"%s\", \"%s\", \"%s\". " +
-            "Please provide them with a grocery list that is closely based on their " +
+            "Please provide them with a grocery list that is closely based on " +
             "every answer they provided.  Additionally, provide general health and diet advice given what you asked " +
             "the user and their " +
             "respective answers. Format this data into a JSON file with a key for as many major " +
             "food" +
-            " groups as you think they want, and it's corresponding pair as an array containing the foods. The key should only be one word. At the end of " +
+            " groups as you think they want, and it's corresponding pair as an array containing the foods. The key should only be one word, don't use underscores to essentially create one word out of two or more. At the end of " +
             "the JSON file, add a key for \"advice\" and include the general health and diet " +
-            "advice you generated. Do not add any extra text.";
+            "advice you generated. Do not add any extra text. Do not add backticks(`) or the word json as if you were formatting it for Markup Language. " +
+            "This will prevent me from turning it into a JSONObject.";
 
 
     private final String initialPrompt;
@@ -76,7 +77,7 @@ public class GroceryListConstructor {
                 // replace strings in follow up prompt with initial prompt and initial
                 // answer
                 .messages(messages)
-                .model("gpt-3.5-turbo")
+                .model("gpt-4-1106-preview")
                 // .maxTokens(400)
                 .build();
 
@@ -85,7 +86,7 @@ public class GroceryListConstructor {
 
         String answer = response.getContent();
         Collections.addAll(questions, answer.split("\n"));
-
+        Log.d("FOLLOWUP:",answer);
         return questions;
     }
 
@@ -110,7 +111,7 @@ public class GroceryListConstructor {
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
                 .messages(messages)
-                .model("gpt-3.5-turbo")
+                .model("gpt-4-0125-preview")
                 // .maxTokens(400)
                 .build();
 
