@@ -1,6 +1,8 @@
 package me.grocery.grocerylist.ui.home;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +13,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import me.grocery.grocerylist.CategoriesAdapter;
 import me.grocery.grocerylist.CategoryModel;
 import me.grocery.grocerylist.ItemModel;
 import me.grocery.grocerylist.R;
+import me.grocery.grocerylist.SplashActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -31,7 +42,7 @@ public class HomeFragment extends Fragment {
         categoriesRecyclerView.setLayoutManager(horizontalLayoutManager);
 
         // Prepare mock data
-        ArrayList<CategoryModel> categories = prepareMockData();
+        ArrayList<CategoryModel> categories = prepareData();
 
         // Set up the categories adapter
         CategoriesAdapter categoriesAdapter = new CategoriesAdapter(getActivity(), categories);
@@ -42,32 +53,33 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    private ArrayList<CategoryModel> prepareMockData() {
+    private ArrayList<CategoryModel> prepareData() {
         ArrayList<CategoryModel> categories = new ArrayList<>();
 
-        // Mock categories
-        String[] categoryNames = {"Fruits", "Vegetables", "Dairy"};
+        try {
+            String jsonData = new String(Files.readAllBytes(Paths.get("groceryItems.json")));
 
-        // Mock items for each category
-        ArrayList<ItemModel> fruits = new ArrayList<>();
-        fruits.add(new ItemModel("Apple"));
-        fruits.add(new ItemModel("Banana"));
-        fruits.add(new ItemModel("Cherry"));
+            JSONObject jsonObject = new JSONObject(jsonData);
 
-        ArrayList<ItemModel> vegetables = new ArrayList<>();
-        vegetables.add(new ItemModel("Carrot"));
-        vegetables.add(new ItemModel("Lettuce"));
-        vegetables.add(new ItemModel("Pepper"));
+            while (jsonObject.keys().hasNext()) {
+                String key = jsonObject.keys().next();
 
-        ArrayList<ItemModel> dairy = new ArrayList<>();
-        dairy.add(new ItemModel("Milk"));
-        dairy.add(new ItemModel("Cheese"));
-        dairy.add(new ItemModel("Yogurt"));
+                if (!key.equals("advice")) {
+                    JSONArray array = jsonObject.getJSONArray(key);
+                    ArrayList<ItemModel> itemModelList = new ArrayList<>();
 
-        // Adding categories
-        categories.add(new CategoryModel(categoryNames[0], fruits));
-        categories.add(new CategoryModel(categoryNames[1], vegetables));
-        categories.add(new CategoryModel(categoryNames[2], dairy));
+                    for (int i = 0; i < array.length(); i++) {
+                        String food = array.getString(i);
+                        itemModelList.add(new ItemModel(food.substring(0, 1).toUpperCase() + food.substring(1)));
+                    }
+
+                    categories.add(new CategoryModel(key.substring(0, 1).toUpperCase() + key.substring(1),
+                            itemModelList));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return categories;
     }
