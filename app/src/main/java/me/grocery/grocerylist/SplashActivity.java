@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -137,6 +138,19 @@ public class SplashActivity extends AppCompatActivity {
         slideUpForLogo.setInterpolator(interpolator);
         slideUpForText.setInterpolator(interpolator);
         slideUpForTitle.setInterpolator(interpolator);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // Ensure splash only displays once
+        if (sharedPreferences.getBoolean("isDisplayed", false)) {
+            finish();
+            startActivity(intent);
+        }
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isDisplayed", true);
+        editor.apply();
 
         fadeInForEditText.setAnimationListener(new Animation.AnimationListener() {
             @Override
