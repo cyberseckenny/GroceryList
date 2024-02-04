@@ -93,8 +93,6 @@ public class SplashActivity extends AppCompatActivity {
     private Runnable cursorBlinkRunnable = null;
     private int DURATION = 2000;
     private int OFFSET = 1500;
-
-
     //For the question answering phase
     private int currentQuestionIndex = 0;
     private TextView textViewQuestion;

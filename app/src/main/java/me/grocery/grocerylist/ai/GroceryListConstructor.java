@@ -76,7 +76,7 @@ public class GroceryListConstructor {
      */
     public List<String> followUpQuestions() {
         List<String> questions = new ArrayList<>();
-        OpenAiService service = getClient(API_KEY, true);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         List<ChatMessage> messages = new ArrayList<>();
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -95,6 +95,9 @@ public class GroceryListConstructor {
                 service.createChatCompletion(completionRequest).getChoices().get(0).getMessage();
 
         String answer = response.getContent();
+        answer = answer.replace("```json", "");
+        answer = answer.replace("json", "");
+        answer = answer.replace("\n", "");
 
         try {
             JSONObject jsonObject = new JSONObject(answer);
@@ -112,19 +115,6 @@ public class GroceryListConstructor {
         return questions;
     }
 
-    OpenAiService getClient(String key, boolean jsonMode) {
-        ObjectMapper mapper = defaultObjectMapper();
-        if (jsonMode) {
-            mapper.addMixIn(ChatCompletionRequest.class, JsonChatCompletionRequest.class);
-        }
-        OkHttpClient client = defaultClient(key, Duration.ZERO)
-                .newBuilder()
-                .build();
-        Retrofit retrofit = defaultRetrofit(client, mapper);
-        OpenAiApi api = retrofit.create(OpenAiApi.class);
-        return new OpenAiService(api);
-    }
-
     /**
      * Generate a grocery list and store it into JSON based on user answers to questions.
      * Also provides general health advice to be stored in the JSON file.
@@ -134,7 +124,7 @@ public class GroceryListConstructor {
      */
     public JSONObject generateGroceryList(List<String> questions, List<String> answers) {
         List<ChatMessage> messages = new ArrayList<>();
-        OpenAiService service = getClient(API_KEY, true);
+        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
         // TODO: write this properly, it could cause a lot of issues.
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -154,6 +144,9 @@ public class GroceryListConstructor {
                 service.createChatCompletion(completionRequest).getChoices().get(0).getMessage();
 
         String answer = response.getContent();
+        answer = answer.replace("```json", "");
+        answer = answer.replace("json", "");
+        answer = answer.replace("\n", "");
 
         JSONObject jsonObject = null;
         Log.d("JSONOBJECT:", answer);
