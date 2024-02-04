@@ -94,7 +94,9 @@
         android:layout_height="200dp"
         android:layout_centerInParent="true"
         android:visibility="gone"
-        android:src="@drawable/ic_dashboard_black_24dp"
+        android:src="@drawable/grocery_logo"
+        android:animateLayoutChanges="true"
+        android:layoutAnimation="@anim/rotate"
         android:contentDescription="@string/progressbar" />
 
 </RelativeLayout>
