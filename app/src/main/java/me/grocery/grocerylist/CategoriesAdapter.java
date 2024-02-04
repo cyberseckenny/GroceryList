@@ -14,18 +14,21 @@ import java.util.ArrayList;
 
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder> {
 
+    private ItemsAdapter.ItemsAdapterListener listener;
     private final Context context;
     private final ArrayList<CategoryModel> categories;
 
-    public CategoriesAdapter(Context context, ArrayList<CategoryModel> categories) {
+    public CategoriesAdapter(Context context, ArrayList<CategoryModel> categories, ItemsAdapter.ItemsAdapterListener listener) {
         this.context = context;
         this.categories = categories;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_layout, parent, false);
+
         return new CategoryViewHolder(view);
     }
 
@@ -35,7 +38,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         holder.categoryName.setText(category.getCategoryName());
 
         // Set up the inner RecyclerView
-        ItemsAdapter itemsAdapter = new ItemsAdapter(context,category.getItems());
+        ItemsAdapter itemsAdapter = new ItemsAdapter(context,category.getItems(), listener);
         holder.itemsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         holder.itemsRecyclerView.setAdapter(itemsAdapter);
 

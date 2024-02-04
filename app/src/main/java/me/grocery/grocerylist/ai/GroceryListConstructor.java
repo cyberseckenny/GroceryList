@@ -26,8 +26,8 @@ public class GroceryListConstructor {
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them ONLY FIVE (no sub-questions) follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
-            "into a JSON file separating each question by a new line. Make sure to number each " +
-            "question. Do not add any extra text.";
+            "into a text file separating each question by a new line. Make sure to number each " +
+            "question. Do not add any extra text. Do not add backticks(`) or the word json as if you were formatting it for Markup Language.";
 
     // TODO: make sure api isn't evil
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
@@ -77,7 +77,7 @@ public class GroceryListConstructor {
                 // replace strings in follow up prompt with initial prompt and initial
                 // answer
                 .messages(messages)
-                .model("gpt-4-1106-preview")
+                .model("gpt-4-0125-preview")
                 // .maxTokens(400)
                 .build();
 

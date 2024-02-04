@@ -3,6 +3,7 @@ package me.grocery.grocerylist.ui.home;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.JsonReader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
@@ -27,13 +29,16 @@ import java.util.List;
 import me.grocery.grocerylist.CategoriesAdapter;
 import me.grocery.grocerylist.CategoryModel;
 import me.grocery.grocerylist.ItemModel;
+import me.grocery.grocerylist.ItemsAdapter;
 import me.grocery.grocerylist.R;
 import me.grocery.grocerylist.SplashActivity;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements ItemsAdapter.ItemsAdapterListener{
 
     private RecyclerView categoriesRecyclerView;
-
+    ArrayList<CategoryModel> categories = new ArrayList<>();
+    ArrayList<ItemModel> itemModelList = new ArrayList<>();
+    public static String advice;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -43,10 +48,10 @@ public class HomeFragment extends Fragment {
         categoriesRecyclerView.setLayoutManager(horizontalLayoutManager);
 
         // Prepare mock data
-        ArrayList<CategoryModel> categories = prepareData();
+         categories = prepareData();
 
         // Set up the categories adapter
-        CategoriesAdapter categoriesAdapter = new CategoriesAdapter(getActivity(), categories);
+        CategoriesAdapter categoriesAdapter = new CategoriesAdapter(getActivity(), categories, this);
         categoriesRecyclerView.setAdapter(categoriesAdapter);
 
         PagerSnapHelper snapHelper = new PagerSnapHelper();
@@ -55,7 +60,6 @@ public class HomeFragment extends Fragment {
     }
 
     private ArrayList<CategoryModel> prepareData() {
-        ArrayList<CategoryModel> categories = new ArrayList<>();
 
         try {
             String jsonData =
@@ -79,11 +83,44 @@ public class HomeFragment extends Fragment {
                     categories.add(new CategoryModel(key.substring(0, 1).toUpperCase() + key.substring(1),
                             itemModelList));
                 }
+                else{
+                    advice = jsonObject.getString(key);
+
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return categories;
+    }
+    public  void saveItemsToJson() {
+        try {
+            // Convert your items list to JSON
+            JSONObject rootObject = new JSONObject(); // Root JSON object for all categories
+
+            for (CategoryModel category : categories) {
+                JSONArray itemsArray = new JSONArray(); // Array for this category's items
+                for (ItemModel item : category.getItems()) {
+                    itemsArray.put(item.getItemName()); // Add each item's name to the array
+                }
+                rootObject.put(category.getCategoryName(), itemsArray); // Add the category with its items to the root object
+            }
+            rootObject.put("advice", advice);
+            Log.d("SAVEDATA:",rootObject.toString());
+            // Write JSON to a file
+            FileOutputStream fos = getContext().openFileOutput("groceryItems.json", Context.MODE_PRIVATE);
+            fos.write(rootObject.toString().getBytes());
+            fos.close();
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSaveItems() {
+            saveItemsToJson();
+
+
     }
 }

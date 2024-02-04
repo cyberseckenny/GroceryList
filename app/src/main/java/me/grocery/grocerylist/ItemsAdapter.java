@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,15 +16,20 @@ import java.util.ArrayList;
 
 public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final ArrayList<ItemModel> items;
+
+    private ItemsAdapterListener listener;
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_ADD_BUTTON = 1;
     private Context context;
 
-    public ItemsAdapter(Context context,ArrayList<ItemModel> items) {
+    public ItemsAdapter(Context context,ArrayList<ItemModel> items, ItemsAdapterListener listener) {
         this.context = context;
         this.items = items;
+        this.listener = listener;
     }
-
+    public interface ItemsAdapterListener {
+        void onSaveItems();
+    }
     @Override
     public int getItemViewType(int position) {
         return (position == items.size()) ? VIEW_TYPE_ADD_BUTTON : VIEW_TYPE_ITEM;
@@ -40,13 +46,25 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return new AddItemViewHolder(view);
         }
     }
-
+    private void saveItems() {
+        if (listener != null) {
+            listener.onSaveItems();
+        }
+    }
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == VIEW_TYPE_ITEM) {
             ItemModel item = items.get(position);
             ((ItemViewHolder) holder).itemName.setText(item.getItemName());
 
+            ((ItemViewHolder) holder).itemRadio.setOnClickListener(v -> {
+                // Remove item logic
+                items.remove(position);
+                saveItems();
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, items.size());
+
+            });
             // Set click listener for editing
             holder.itemView.setOnClickListener(v -> {
                 final EditText editText = new EditText(context);
@@ -64,6 +82,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         .setNegativeButton("Cancel", null)
                         .show();
             });
+            saveItems();
         } else {
             // Handle the Add button click event
             holder.itemView.setOnClickListener(v -> {
@@ -81,6 +100,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         .setNegativeButton("Cancel", null)
                         .show();
             });
+            saveItems();
         }
     }
 
@@ -91,10 +111,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView itemName;
+        RadioButton itemRadio;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.itemNameTextView);
+            itemRadio = itemView.findViewById(R.id.itemRadioButton);
         }
     }
 

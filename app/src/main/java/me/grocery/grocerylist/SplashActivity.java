@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -140,17 +141,24 @@ public class SplashActivity extends AppCompatActivity {
         slideUpForTitle.setInterpolator(interpolator);
 
         Intent intent = new Intent(this, MainActivity.class);
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("shared", MODE_PRIVATE);
+        File file = new File(this.getFilesDir(), "groceryItems.json");
 
+        Log.d("groceryITEMSTEST:", file.toString());
         // Ensure splash only displays once
-        if (sharedPreferences.getBoolean("isDisplayed", false)) {
-            finish();
-            startActivity(intent);
+        if(!file.exists() || file.length() != 0)
+        {
+            if (sharedPreferences.getBoolean("isDisplayed", false)) {
+                finish();
+                startActivity(intent);
+            }
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isDisplayed", true);
+            editor.apply();
         }
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("isDisplayed", true);
-        editor.apply();
+
+
 
         fadeInForEditText.setAnimationListener(new Animation.AnimationListener() {
             @Override

@@ -41,7 +41,11 @@
         android:text="@string/title"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="52sp" />
+        android:textSize="52sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="100sp"
+        android:autoSizeStepGranularity="2sp"/>
 
     <TextView
         android:id="@+id/welcomeText"

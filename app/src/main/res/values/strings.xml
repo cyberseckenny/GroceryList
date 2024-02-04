@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">GroceryList</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">Your List</string>
+    <string name="title_dashboard">New List</string>
+    <string name="title_notifications">Advice</string>
     <string name="hey_let_s_find_a_meal_plan_that_s_fit_for_you">Hey! Let’s find a meal plan that’s fit for you.</string>
     <string name="enter_your_requirement">Enter your requirement</string>
     <string name="_1400_calorie_keto_meal_plan">\'1400 calorie keto meal plan\'</string>
@@ -11,4 +11,5 @@
     <string name="title">Grocery++</string>
     <string name="logo">Logo</string>
     <string name="progressbar">ProgressBar</string>
+    <string name="create_new_list">Create New List</string>
 </resources>
