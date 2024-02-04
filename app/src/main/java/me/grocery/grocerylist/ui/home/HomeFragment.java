@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import me.grocery.grocerylist.CategoriesAdapter;
+import me.grocery.grocerylist.CategoryModel;
 import me.grocery.grocerylist.RecyclerViewAdapter;
 import me.grocery.grocerylist.TextModel;
 import me.grocery.grocerylist.databinding.FragmentHomeBinding;
@@ -45,6 +47,8 @@ public class HomeFragment extends Fragment {
 
     ArrayList<String> categories = new ArrayList<String>();
     ArrayList<ArrayList<String>> items = new  ArrayList<ArrayList<String>>();
+    ArrayList<TextModel> textModels = new ArrayList<>();
+    ArrayList<CategoryModel>categoryModels=new ArrayList<>();
 
     private JSONObject data;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -116,27 +120,41 @@ public class HomeFragment extends Fragment {
 
         }
 
+        setUpCategories();
 
         RecyclerView recyclerView= root.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        ArrayList<TextModel>textModels=new ArrayList<>();
 
-        setUpTextModels(textModels);
 
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this,textModels);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        RecyclerView categoryView = root.findViewById(R.id.horizontal_recycler_view);
+        LinearLayoutManager layoutManager2 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        categoryView.setLayoutManager(layoutManager2);
 
+        CategoriesAdapter adapter2 = new CategoriesAdapter(getContext(),categoryModels);
+        categoryView.setAdapter(adapter2);
+        categoryView.setLayoutManager(new LinearLayoutManager(requireContext()));
         return root;
     }
 
+    private void setUpCategories() {
 
-    private void setUpTextModels(ArrayList<TextModel>textModels){
+        setUpTextModels();
+        for (int i = 0; i < categories.size(); i++) {
+            categoryModels.add(new CategoryModel(categories.get(i),textModels));
 
-        for (int i = 0; i < items.size(); i++) {
+        }
+    }
+
+
+    private void setUpTextModels(){
+
+        for (int i = 0; i < categories.size(); i++) {
             Log.d("Category:", categories.get(i));
             for(int j = 0; j < items.get(i).size(); j++)
             {
