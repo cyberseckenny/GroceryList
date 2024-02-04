@@ -1,6 +1,7 @@
 package me.grocery.grocerylist.ai;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
@@ -118,7 +119,7 @@ public class GroceryListConstructor {
         String answer = response.getContent();
 
         JSONObject jsonObject = null;
-
+        Log.d("JSONOBJECT:", answer);
         try {
             jsonObject = new JSONObject(answer);
         } catch (JSONException e) {

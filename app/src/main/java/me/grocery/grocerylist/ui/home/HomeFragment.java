@@ -19,12 +19,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import me.grocery.grocerylist.RecyclerViewAdapter;
@@ -36,8 +42,9 @@ import me.grocery.grocerylist.R;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    
-    public boolean SaveState= false;
+
+    ArrayList<String> categories = new ArrayList<String>();
+    ArrayList<ArrayList<String>> items = new  ArrayList<ArrayList<String>>();
 
     private JSONObject data;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -50,18 +57,69 @@ public class HomeFragment extends Fragment {
 
         if (getContext() != null){
             Context context = getContext();
+            StringBuilder jsonStringBuilder = new StringBuilder();
             try {
-                FileInputStream fis=context.openFileInput("groceryItems");
+                // Step 1: Open and read the file
+                FileInputStream fis = getContext().openFileInput("groceryItems.json"); // Replace getContext() with getActivity() if in a fragment
+                InputStreamReader isr = new InputStreamReader(fis);
+                BufferedReader bufferedReader = new BufferedReader(isr);
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    jsonStringBuilder.append(line);
+                }
+                bufferedReader.close();
 
+                // Step 2: Parse the content into a JSONObject
+                JSONObject jsonObject = new JSONObject(jsonStringBuilder.toString());
+
+                // Step 3: Iterate over the JSONObject
+                Iterator<String> keys = jsonObject.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (key.equalsIgnoreCase("advice"))
+                        continue;//TODO: add advice logic
+                    Object item = jsonObject.get(key);
+                    categories.add(key);
+                    if (item instanceof JSONArray) {
+                        JSONArray value = (JSONArray) item;
+                        ArrayList<String> temp = new ArrayList<String>();
+                        for(int i = 0; i < value.length(); i++) {
+                            Object element = value.get(i);
+
+                            if (element instanceof JSONObject) {
+                                JSONObject trueElement = (JSONObject) element;
+                                Log.d("NOTSTRING IN JSON:", trueElement.toString());
+                            } else if (element instanceof String) {
+                                String trueElement = (String) element;
+
+                                temp.add(trueElement);
+                            }
+                        }
+                        items.add(temp);
+                    } else {
+                        //Perhaps throw exception
+                    }
+
+
+
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+                // Handle the case where the file doesn't exist
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle I/O errors
+            } catch (JSONException e) {
+                e.printStackTrace();
+                // Handle JSON parsing errors
             }
 
         }
 
 
         RecyclerView recyclerView= root.findViewById(R.id.recyclerView);
-
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
         ArrayList<TextModel>textModels=new ArrayList<>();
 
         setUpTextModels(textModels);
@@ -78,20 +136,12 @@ public class HomeFragment extends Fragment {
 
     private void setUpTextModels(ArrayList<TextModel>textModels){
 
-        if (!SaveState) {
-            String[] textBoxWord = getResources().getStringArray(R.array.myStringArray);
-            Log.d("hello","hi");
-            for (int i = 0; i < textBoxWord.length; i++) {
-                textModels.add(new TextModel(textBoxWord[i]));
-            }
-            SaveState= true;
-        }else{
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            String savedArrayString = preferences.getString("savedArrayKey", "[]");
-
-            List<String> savedArray = new ArrayList<>(Arrays.asList(new Gson().fromJson(savedArrayString, String[].class)));
-            for (int i = 0; i < savedArray.size(); i++) {
-                textModels.add(new TextModel(savedArray.get(i)));
+        for (int i = 0; i < items.size(); i++) {
+            Log.d("Category:", categories.get(i));
+            for(int j = 0; j < items.get(i).size(); j++)
+            {
+                Log.d("Item:", items.get(i).get(j));
+                textModels.add(new TextModel(items.get(i).get(j)));
             }
 
         }

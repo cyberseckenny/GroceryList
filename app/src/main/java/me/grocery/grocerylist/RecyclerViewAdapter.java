@@ -1,5 +1,6 @@
 package me.grocery.grocerylist;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 import me.grocery.grocerylist.ui.home.HomeFragment;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     Context context;
     ArrayList<TextModel> textModels;
@@ -26,17 +27,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @NonNull
     @Override
-    public RecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater= LayoutInflater.from(context);
-        View view= inflater.inflate(R.layout.recycler_view_row, parent,false);
-
-        return new RecyclerViewAdapter.MyViewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_squircle, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
 
-        holder.edittext.setText(textModels.get(position).getEditBox());
+        holder.textView.setText(textModels.get(position).getEditBox());
     }
 
     @Override
@@ -44,15 +43,31 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return textModels.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
 
-        EditText edittext;
-        TextView textbox;
-
-        public MyViewHolder(@NonNull View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            edittext= itemView.findViewById(R.id.edittextid);
 
+            textView = itemView.findViewById(R.id.textViewItem);
+
+            textView.setOnClickListener(v -> {
+                // Open AlertDialog with EditText to edit text
+                Context context = v.getContext();
+                EditText editText = new EditText(context);
+                editText.setText(textView.getText());
+
+                new AlertDialog.Builder(context)
+                        .setTitle("Edit Item")
+                        .setView(editText)
+                        .setPositiveButton("Save", (dialog, which) -> {
+                            textView.setText(editText.getText().toString());
+                            // Here, you should also update the data model behind the adapter
+                            // so that the changes are not lost on scroll.
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
         }
     }
 }

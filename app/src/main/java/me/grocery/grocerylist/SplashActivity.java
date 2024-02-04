@@ -2,6 +2,7 @@ package me.grocery.grocerylist;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +74,11 @@ public class SplashActivity extends AppCompatActivity {
         return userInput;
     }
 
+    private JSONObject data;
 
+    public JSONObject getData() {
+        return data;
+    }
 
     //animation values
     private boolean isAnimationRunning;
@@ -371,7 +381,12 @@ public class SplashActivity extends AppCompatActivity {
                             submitButton.setVisibility(View.GONE);
                         }
                     });
-                    glc.generateGroceryList(questions, answers);
+                    try (FileOutputStream fos = SplashActivity.this.openFileOutput("groceryItems.json", Context.MODE_PRIVATE)) {
+                        fos.write(glc.generateGroceryList(questions, answers).toString().getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     handler.post(new Runnable() {
                         @Override
                         public void run() {

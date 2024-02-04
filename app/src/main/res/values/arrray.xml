@@ -2,8 +2,6 @@
 <resources>
     <string-array name="myStringArray">
 
-        <item>0</item>
-        <item>0</item>
         <item>Item 1</item>
         <item>Item 2</item>
         <item>Item 3</item>
