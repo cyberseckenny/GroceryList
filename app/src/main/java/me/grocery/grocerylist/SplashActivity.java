@@ -222,10 +222,15 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Animation fadeIn = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_in);
-                progressBar.startAnimation(fadeIn);
                 Animation rotate = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.rotate);
-                progressBar.startAnimation(rotate);
-                progressBar.setVisibility(View.VISIBLE);
+
+                AnimationSet animationSet = new AnimationSet(true);
+                animationSet.addAnimation(rotate);
+                animationSet.addAnimation(fadeIn);
+
+                progressBar.startAnimation(animationSet);
+
+                logoImageView.startAnimation(animationSet);
                 Animation fadeOut = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_out);
                 logoImageView.startAnimation(fadeOut);
                 titleTextView.startAnimation(fadeOut);
@@ -239,6 +244,7 @@ public class SplashActivity extends AppCompatActivity {
                 editText.setVisibility(View.GONE);
                 submitButton.setVisibility(View.GONE);
 
+                progressBar.setVisibility(View.VISIBLE);
             }
         });
         executor.execute(new Runnable() {
@@ -372,11 +378,13 @@ public class SplashActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             Animation fadeIn = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_in);
-                            progressBar.startAnimation(fadeIn);
-                            progressBar.setVisibility(View.VISIBLE);
-
                             Animation rotate = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.rotate);
-                            progressBar.startAnimation(rotate);
+
+                            AnimationSet animationSet = new AnimationSet(true);
+                            animationSet.addAnimation(rotate);
+                            animationSet.addAnimation(fadeIn);
+
+                            progressBar.startAnimation(animationSet);
 
                             Animation fadeOut = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_out);
                             welcomeTextView.startAnimation(fadeOut);
@@ -386,6 +394,8 @@ public class SplashActivity extends AppCompatActivity {
                             welcomeTextView.setVisibility(View.GONE);
                             editText.setVisibility(View.GONE);
                             submitButton.setVisibility(View.GONE);
+
+                            progressBar.setVisibility(View.VISIBLE);
                         }
                     });
                     try (FileOutputStream fos = SplashActivity.this.openFileOutput("groceryItems.json", Context.MODE_PRIVATE)) {

@@ -26,7 +26,8 @@ public class GroceryListConstructor {
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them five follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
-            "into a text file separating each question be a new line. Do not add any extra text.";
+            "into a text file separating each question be a new line. Make sure to number each " +
+            "question. Do not add any extra text.";
 
     // TODO: make sure api isn't evil
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
