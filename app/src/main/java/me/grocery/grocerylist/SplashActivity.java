@@ -131,6 +131,7 @@ public class SplashActivity extends AppCompatActivity {
         Animation fadeInForText = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         Animation slideUpForText = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         Animation fadeInForEditText = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        Animation rotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
 
         Interpolator interpolator = AnimationUtils.loadInterpolator(this, R.anim.my_interpolator);
         slideUpForLogo.setInterpolator(interpolator);
@@ -205,6 +206,7 @@ public class SplashActivity extends AppCompatActivity {
                     return;
                 }
                 progressBar.setVisibility(View.VISIBLE);
+                progressBar.startAnimation(rotate);
                 progressBar.startAnimation(fadeInForLogo);
                 sendPromptToBackendAndReceiveQuestions(userInput);
                 Log.d("user input:", userInput);
@@ -221,6 +223,8 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 Animation fadeIn = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_in);
                 progressBar.startAnimation(fadeIn);
+                Animation rotate = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.rotate);
+                progressBar.startAnimation(rotate);
                 progressBar.setVisibility(View.VISIBLE);
                 Animation fadeOut = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_out);
                 logoImageView.startAnimation(fadeOut);
@@ -370,6 +374,9 @@ public class SplashActivity extends AppCompatActivity {
                             Animation fadeIn = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_in);
                             progressBar.startAnimation(fadeIn);
                             progressBar.setVisibility(View.VISIBLE);
+
+                            Animation rotate = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.rotate);
+                            progressBar.startAnimation(rotate);
 
                             Animation fadeOut = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_out);
                             welcomeTextView.startAnimation(fadeOut);
