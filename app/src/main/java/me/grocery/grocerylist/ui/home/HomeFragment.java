@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import me.grocery.grocerylist.CategoriesAdapter;
@@ -57,12 +58,14 @@ public class HomeFragment extends Fragment {
         ArrayList<CategoryModel> categories = new ArrayList<>();
 
         try {
-            String jsonData = new String(Files.readAllBytes(Paths.get("groceryItems.json")));
+            String jsonData =
+                    new String(Files.readAllBytes(Paths.get(getContext().getFilesDir() + "/groceryItems.json")));
 
             JSONObject jsonObject = new JSONObject(jsonData);
+            Iterator<String> iterator = jsonObject.keys();
 
-            while (jsonObject.keys().hasNext()) {
-                String key = jsonObject.keys().next();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
 
                 if (!key.equals("advice")) {
                     JSONArray array = jsonObject.getJSONArray(key);
