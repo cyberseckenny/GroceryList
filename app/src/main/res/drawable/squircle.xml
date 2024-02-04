@@ -2,5 +2,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/davy_gray" /> <!-- White background -->
     <stroke android:width="0dp" android:color="@color/teal_700" /> <!-- Gray border -->
-    <corners android:radius="10dp"/> <!-- Rounded corners for the squircle shape -->
+    <corners android:radius="5dp"/> <!-- Rounded corners for the squircle shape -->
 </shape>
