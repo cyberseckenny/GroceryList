@@ -7,11 +7,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.ViewHolder> {
+public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder> {
 
     private final Context context;
     private final ArrayList<CategoryModel> categories;
@@ -21,16 +22,22 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         this.categories = categories;
     }
 
+    @NonNull
     @Override
-    public CategoriesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_home, parent, false);
-        return new ViewHolder(view);
+    public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_layout, parent, false);
+        return new CategoryViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoriesAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         CategoryModel category = categories.get(position);
         holder.categoryName.setText(category.getCategoryName());
+
+        // Set up the inner RecyclerView
+        ItemsAdapter itemsAdapter = new ItemsAdapter(category.getItems());
+        holder.itemsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        holder.itemsRecyclerView.setAdapter(itemsAdapter);
     }
 
     @Override
@@ -38,15 +45,15 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         return categories.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView categoryName;
+        RecyclerView itemsRecyclerView;
 
-        public ViewHolder(View itemView) {
+        public CategoryViewHolder(View itemView) {
             super(itemView);
-            categoryName = itemView.findViewById(R.id.cardView);
+            categoryName = itemView.findViewById(R.id.categoryNameTextView);
+            itemsRecyclerView = itemView.findViewById(R.id.itemsRecyclerView);
         }
-
     }
 }
-
 
