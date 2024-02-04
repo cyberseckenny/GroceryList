@@ -33,12 +33,12 @@ public class GroceryListConstructor {
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\".  You then asked them five follow up questions: \"%s\", \"%s\"," +
             " \"%s\", \"%s\", \"%s\" and they answered \"%s\", \"%s\", \"%s\", \"%s\", \"%s\". " +
-            "Please provide them with a well-rounded and nutritious grocery list based on their " +
-            "wants.  Additionally, provide general health and diet advice given what you asked " +
+            "Please provide them with a grocery list that is closely based on their " +
+            "every answer they provided.  Additionally, provide general health and diet advice given what you asked " +
             "the user and their " +
-            "respective answers. Format this data into a JSON file with a key for each major " +
+            "respective answers. Format this data into a JSON file with a key for as many major " +
             "food" +
-            " group and it's corresponding pair as an array containing the foods. The key should only be one word. At the end of " +
+            " groups as you think they want, and it's corresponding pair as an array containing the foods. The key should only be one word. At the end of " +
             "the JSON file, add a key for \"advice\" and include the general health and diet " +
             "advice you generated. Do not add any extra text.";
 
