@@ -1,8 +1,14 @@
 package me.grocery.grocerylist.ai;
 
+import static com.theokanning.openai.service.OpenAiService.defaultClient;
+import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
+import static com.theokanning.openai.service.OpenAiService.defaultRetrofit;
+
 import android.content.Context;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.theokanning.openai.client.OpenAiApi;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -16,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import me.grocery.grocerylist.SplashActivity;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+
 /**
  * Generates prompts to a user based on their answer to an initial question.
  * The prompts are intended to refine the grocery list or meal plan the user is seeking to create.
@@ -23,6 +32,7 @@ import me.grocery.grocerylist.SplashActivity;
 public class GroceryListConstructor {
     Context context;
     private final String API_KEY;
+    private final String GPT_MODEL = "gpt-4-1106-preview";
     private final String FOLLOW_UP_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\" Ask them ONLY FIVE (no sub-questions) follow up questions that would allow you to " +
             "create a well-rounded meal plan for them based on their wants. Format this data " +
@@ -66,7 +76,7 @@ public class GroceryListConstructor {
      */
     public List<String> followUpQuestions() {
         List<String> questions = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
+        OpenAiService service = getClient(API_KEY, true);
 
         List<ChatMessage> messages = new ArrayList<>();
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -77,7 +87,7 @@ public class GroceryListConstructor {
                 // replace strings in follow up prompt with initial prompt and initial
                 // answer
                 .messages(messages)
-                .model("gpt-4-1106-preview")
+                .model(GPT_MODEL)
                 // .maxTokens(400)
                 .build();
 
@@ -85,9 +95,34 @@ public class GroceryListConstructor {
                 service.createChatCompletion(completionRequest).getChoices().get(0).getMessage();
 
         String answer = response.getContent();
-        Collections.addAll(questions, answer.split("\n"));
-        Log.d("FOLLOWUP:",answer);
+
+        try {
+            JSONObject jsonObject = new JSONObject(answer);
+            jsonObject.keys().forEachRemaining(key -> {
+                try {
+                    questions.add(jsonObject.getString(key));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
         return questions;
+    }
+
+    OpenAiService getClient(String key, boolean jsonMode) {
+        ObjectMapper mapper = defaultObjectMapper();
+        if (jsonMode) {
+            mapper.addMixIn(ChatCompletionRequest.class, JsonChatCompletionRequest.class);
+        }
+        OkHttpClient client = defaultClient(key, Duration.ZERO)
+                .newBuilder()
+                .build();
+        Retrofit retrofit = defaultRetrofit(client, mapper);
+        OpenAiApi api = retrofit.create(OpenAiApi.class);
+        return new OpenAiService(api);
     }
 
     /**
@@ -99,7 +134,7 @@ public class GroceryListConstructor {
      */
     public JSONObject generateGroceryList(List<String> questions, List<String> answers) {
         List<ChatMessage> messages = new ArrayList<>();
-        OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
+        OpenAiService service = getClient(API_KEY, true);
 
         // TODO: write this properly, it could cause a lot of issues.
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
@@ -111,7 +146,7 @@ public class GroceryListConstructor {
 
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
                 .messages(messages)
-                .model("gpt-4-0125-preview")
+                .model(GPT_MODEL)
                 // .maxTokens(400)
                 .build();
 
