@@ -29,19 +29,18 @@ public class GroceryListConstructor {
             "into a text file separating each question by a new line. Make sure to number each " +
             "question. Do not add any extra text. Do not add backticks(`) or the word json as if you were formatting it for Markup Language.";
 
-    // TODO: make sure api isn't evil
     private final String GENERATION_PROMPT = "Suppose you asked someone the question \"%s\" and " +
             "they answered \"%s\".  You then asked them five follow up questions: \"%s\", \"%s\"," +
             " \"%s\", \"%s\", \"%s\" and they answered \"%s\", \"%s\", \"%s\", \"%s\", \"%s\". " +
             "Please provide them with a grocery list that is closely based on " +
-            "every answer they provided.  Additionally, provide general health and diet advice given what you asked " +
+            "every answer they provided.  Additionally, provide general health and diet advice given what you asked" +
             "the user and their " +
-            "respective answers. Format this data into a JSON file with a key for as many major " +
+            "respective answers. Keep it brief. Format this data into a JSON file with a key for as many major " +
             "food" +
             " groups as you think they want, and it's corresponding pair as an array containing the foods. The key should only be one word, don't use underscores to essentially create one word out of two or more. At the end of " +
             "the JSON file, add a key for \"advice\" and include the general health and diet " +
-            "advice you generated. Do not add any extra text. Do not add backticks(`) or the word json as if you were formatting it for Markup Language. " +
-            "This will prevent me from turning it into a JSONObject.";
+            "advice you generated. Do not add any extra text. Do not add backticks(`) or the word json as if you were formatting it for Markup Language. Be sure to add a curly braces as the first and last character of your response." +
+            "This will allow me to turn it into a JSONObject.";
 
 
     private final String initialPrompt;
@@ -74,11 +73,8 @@ public class GroceryListConstructor {
 
         messages.add(message);
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-                // replace strings in follow up prompt with initial prompt and initial
-                // answer
                 .messages(messages)
                 .model("gpt-4-0125-preview")
-                // .maxTokens(400)
                 .build();
 
         ChatMessage response =
@@ -101,7 +97,6 @@ public class GroceryListConstructor {
         List<ChatMessage> messages = new ArrayList<>();
         OpenAiService service = new OpenAiService(API_KEY, Duration.ZERO);
 
-        // TODO: write this properly, it could cause a lot of issues.
         ChatMessage message = new ChatMessage(ChatMessageRole.USER.value(),
                 String.format(GENERATION_PROMPT, initialPrompt, initialAnswer, questions.get(0),
                         questions.get(1), questions.get(2), questions.get(3), questions.get(4),
@@ -112,7 +107,7 @@ public class GroceryListConstructor {
         ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
                 .messages(messages)
                 .model("gpt-4-0125-preview")
-                // .maxTokens(400)
+                 .maxTokens(400)
                 .build();
 
         ChatMessage response =

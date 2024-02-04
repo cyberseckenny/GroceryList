@@ -47,10 +47,8 @@ public class HomeFragment extends Fragment implements ItemsAdapter.ItemsAdapterL
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         categoriesRecyclerView.setLayoutManager(horizontalLayoutManager);
 
-        // Prepare mock data
          categories = prepareData();
 
-        // Set up the categories adapter
         CategoriesAdapter categoriesAdapter = new CategoriesAdapter(getActivity(), categories, this);
         categoriesRecyclerView.setAdapter(categoriesAdapter);
 
@@ -71,7 +69,7 @@ public class HomeFragment extends Fragment implements ItemsAdapter.ItemsAdapterL
             while (iterator.hasNext()) {
                 String key = iterator.next();
 
-                if (!key.equals("advice")) {
+                if (!key.equalsIgnoreCase("advice")) {
                     JSONArray array = jsonObject.getJSONArray(key);
                     ArrayList<ItemModel> itemModelList = new ArrayList<>();
 
@@ -96,19 +94,17 @@ public class HomeFragment extends Fragment implements ItemsAdapter.ItemsAdapterL
     }
     public  void saveItemsToJson() {
         try {
-            // Convert your items list to JSON
-            JSONObject rootObject = new JSONObject(); // Root JSON object for all categories
+            JSONObject rootObject = new JSONObject();
 
             for (CategoryModel category : categories) {
-                JSONArray itemsArray = new JSONArray(); // Array for this category's items
+                JSONArray itemsArray = new JSONArray();
                 for (ItemModel item : category.getItems()) {
-                    itemsArray.put(item.getItemName()); // Add each item's name to the array
+                    itemsArray.put(item.getItemName());
                 }
-                rootObject.put(category.getCategoryName(), itemsArray); // Add the category with its items to the root object
+                rootObject.put(category.getCategoryName(), itemsArray);
             }
             rootObject.put("advice", advice);
             Log.d("SAVEDATA:",rootObject.toString());
-            // Write JSON to a file
             FileOutputStream fos = getContext().openFileOutput("groceryItems.json", Context.MODE_PRIVATE);
             fos.write(rootObject.toString().getBytes());
             fos.close();

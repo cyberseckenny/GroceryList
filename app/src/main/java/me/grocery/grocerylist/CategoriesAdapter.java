@@ -37,7 +37,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         CategoryModel category = categories.get(position);
         holder.categoryName.setText(category.getCategoryName());
 
-        // Set up the inner RecyclerView
         ItemsAdapter itemsAdapter = new ItemsAdapter(context,category.getItems(), listener);
         holder.itemsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         holder.itemsRecyclerView.setAdapter(itemsAdapter);

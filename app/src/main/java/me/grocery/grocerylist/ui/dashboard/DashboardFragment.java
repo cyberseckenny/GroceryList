@@ -95,10 +95,9 @@ public class DashboardFragment extends Fragment {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("isDisplayed", false);
             editor.apply();
-            // Clear the activity stack and start fresh
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            getActivity().finish(); // Optional: Close the current activity
+            getActivity().finish(); 
         }
     }
 

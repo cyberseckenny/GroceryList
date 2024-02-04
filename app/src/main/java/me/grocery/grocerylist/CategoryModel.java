@@ -11,7 +11,6 @@ public class CategoryModel {
         this.items = items;
     }
 
-    // Getters
     public String getCategoryName() { return categoryName; }
     public ArrayList<ItemModel> getItems() { return items; }
 }

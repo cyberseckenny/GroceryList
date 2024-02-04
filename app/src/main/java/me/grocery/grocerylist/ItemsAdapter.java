@@ -58,14 +58,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((ItemViewHolder) holder).itemName.setText(item.getItemName());
 
             ((ItemViewHolder) holder).itemRadio.setOnClickListener(v -> {
-                // Remove item logic
                 items.remove(position);
                 saveItems();
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, items.size());
 
             });
-            // Set click listener for editing
             holder.itemView.setOnClickListener(v -> {
                 final EditText editText = new EditText(context);
                 editText.setText(item.getItemName());
@@ -84,7 +82,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             });
             saveItems();
         } else {
-            // Handle the Add button click event
             holder.itemView.setOnClickListener(v -> {
                 final EditText editText = new EditText(context);
                 new AlertDialog.Builder(context)
@@ -106,7 +103,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return items.size() + 1; // +1 for the Add button
+        return items.size() + 1;
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -123,7 +120,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     static class AddItemViewHolder extends RecyclerView.ViewHolder {
         public AddItemViewHolder(View itemView) {
             super(itemView);
-            // itemView is your add item button layout
         }
     }
 }

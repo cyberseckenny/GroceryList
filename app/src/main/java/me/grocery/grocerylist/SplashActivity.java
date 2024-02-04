@@ -82,7 +82,7 @@ public class SplashActivity extends AppCompatActivity {
         return data;
     }
 
-    //animation values
+    Animation fadeOut;
     private boolean isAnimationRunning;
     private Runnable typingAnimation;
     private boolean cursorBlinkState = false;
@@ -96,16 +96,16 @@ public class SplashActivity extends AppCompatActivity {
     private int OFFSET = 1500;
 
 
-    //For the question answering phase
     private int currentQuestionIndex = 0;
     private TextView textViewQuestion;
     private EditText editTextAnswer;
     private Button buttonSubmit;
-    ImageView progressBar;// Make sure this is a class variable
+    ImageView progressBar;
 
     ImageView logoImageView;
     TextView welcomeTextView;
     TextView titleTextView;
+    TextView loadingTextView;
     EditText editText;
     Button submitButton;
     @Override
@@ -116,11 +116,11 @@ public class SplashActivity extends AppCompatActivity {
          logoImageView = findViewById(R.id.logoImageView);
          welcomeTextView = findViewById(R.id.welcomeText);
          initialPrompt = welcomeTextView.getText().toString();
+         loadingTextView = findViewById(R.id.loadingTextView);
          titleTextView = findViewById(R.id.titleText);
          editText = findViewById(R.id.inputEditText);
          submitButton = findViewById(R.id.submitButton);
         progressBar = findViewById(R.id.loadingImageView);
-        //reference UI components for second phase of questions
         textViewQuestion =welcomeTextView;
         editTextAnswer = editText;
         buttonSubmit = submitButton;
@@ -145,18 +145,21 @@ public class SplashActivity extends AppCompatActivity {
         File file = new File(this.getFilesDir(), "groceryItems.json");
 
         Log.d("groceryITEMSTEST:", file.toString());
-        // Ensure splash only displays once
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isDisplayed", false);
+        editor.apply();
         if(!file.exists() || file.length() != 0)
         {
             if (sharedPreferences.getBoolean("isDisplayed", false)) {
+                Log.d("isDisplayed","FALSE");
                 finish();
                 startActivity(intent);
             }
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isDisplayed", true);
-            editor.apply();
-        }
 
+        }
+        ;
+        editor.putBoolean("isDisplayed", true);
+        editor.apply();
 
 
 
@@ -180,6 +183,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
         Animation fadeInForButton = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+         fadeOut = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_out);
 
         AnimationSet logoAnimationSet = new AnimationSet(false);
         logoAnimationSet.addAnimation(slideUpForLogo);
@@ -222,14 +226,13 @@ public class SplashActivity extends AppCompatActivity {
                 userInput = editText.getText().toString();
                 if (userInput.equals("fake") || userInput.isEmpty()) {
                     Toast.makeText(SplashActivity.this, "Please provide a proper response.", Toast.LENGTH_LONG).show();
-                    // Optionally, clear the EditText or highlight it to indicate an error
                     editTextAnswer.requestFocus();
-                    // Do not proceed to the next question
                     return;
                 }
                 progressBar.setVisibility(View.VISIBLE);
-                progressBar.startAnimation(rotate);
                 progressBar.startAnimation(fadeInForLogo);
+                progressBar.startAnimation(rotate);
+
                 sendPromptToBackendAndReceiveQuestions(userInput);
                 Log.d("user input:", userInput);
 
@@ -253,7 +256,6 @@ public class SplashActivity extends AppCompatActivity {
                 progressBar.startAnimation(animationSet);
 
                 logoImageView.startAnimation(animationSet);
-                Animation fadeOut = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.fade_out);
                 logoImageView.startAnimation(fadeOut);
                 titleTextView.startAnimation(fadeOut);
                 welcomeTextView.startAnimation(fadeOut);
@@ -274,16 +276,13 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                // Default prompt
                 String prompt = "Make a grocery list based on user input";
 
-                // Check if initialPrompt is not null and update prompt accordingly
                 if (initialPrompt != null && !initialPrompt.isEmpty()) {
                     prompt = initialPrompt;
                 }
 
                 GroceryListConstructor glc = new GroceryListConstructor(prompt, userInput, SplashActivity.this);
-                // Simulate AI processing delay
                 try {
                     setQuestions(glc.followUpQuestions());
                     Log.d("FOLLOW UP QUESTIONS:", questions.toString());
@@ -298,7 +297,7 @@ public class SplashActivity extends AppCompatActivity {
                         progressBar.startAnimation(fadeOut);
                         progressBar.setVisibility(View.GONE);
 
-                        displayNextQuestion(glc); // Modified to not require glc as parameter
+                        displayNextQuestion(glc);
                     }
                 });
             }
@@ -310,7 +309,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (!isAnimationRunning) {
-                    return; // Exit the Runnable if the flag is false
+                    return;
                 }
                 String text = mealPlans[textIndex];
                 if(text == null)
@@ -376,19 +375,18 @@ public class SplashActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String answer = editTextAnswer.getText().toString();
-                    //replace with !glc.isValidInput(answer)
+
                     if (answer.equals("fake") || answer.isEmpty()) {
                         Toast.makeText(SplashActivity.this, "Please provide a proper response.", Toast.LENGTH_LONG).show();
                         editTextAnswer.requestFocus();
                         return;
                     }
 
-                    // Proceed with processing the valid answer
                     Log.d("answer", answer);
-                    processAnswer(answer); // Implement this based on your requirements
+                    processAnswer(answer);
 
-                    currentQuestionIndex++; // Move to the next question
-                    displayNextQuestion(glc); // Display the next question or complete the process
+                    currentQuestionIndex++;
+                    displayNextQuestion(glc);
                 }
             });
         } else {
@@ -429,7 +427,6 @@ public class SplashActivity extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            // Switch to MainActivity after generateGroceryList completes
                             Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                             startActivity(mainIntent);
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
